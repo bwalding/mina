@@ -7,7 +7,7 @@
     <version>1.0.5</version>
   </parent>
   <groupId>org.apache.directory.mina</groupId>
-  <version>0.8.4</version>
+  <version>0.8.5-SNAPSHOT</version>
   <artifactId>mina</artifactId>
   <name>Apache MINA</name>
   <packaging>jar</packaging>
@@ -27,9 +27,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/mina/tags/0.8.4</connection>
-    <url>https://svn.apache.org/repos/asf/mina/tags/0.8.4</url>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/mina/tags/0.8.4</developerConnection>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/directory/branches/mina/0.8</connection>
+    <url>http://svn.apache.org/viewvc/directory/branches/mina/0.8/</url>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/directory/branches/mina/0.8</developerConnection>
   </scm>
 
   <ciManagement>

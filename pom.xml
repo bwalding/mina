@@ -45,9 +45,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/mina/tags/2.0.0-M6-SNAPSHOT</connection>
-    <url>http://svn.apache.org/viewvc/directory/mina/tags/2.0.0-M6-SNAPSHOT</url>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/mina/tags/2.0.0-M6-SNAPSHOT</developerConnection>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/mina/tags/build-2.0.0-M6-SNAPSHOT</connection>
+    <url>http://svn.apache.org/viewvc/directory/mina/tags/build-2.0.0-M6-SNAPSHOT</url>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/mina/tags/build-2.0.0-M6-SNAPSHOT</developerConnection>
   </scm>
 
   <distributionManagement>

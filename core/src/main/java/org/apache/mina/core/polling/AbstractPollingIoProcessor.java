@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.mina.core.buffer.IoBuffer;
@@ -98,6 +99,8 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
     private volatile boolean disposed;
 
     private final DefaultIoFuture disposalFuture = new DefaultIoFuture(null);
+    
+    protected AtomicBoolean wakeupCalled = new AtomicBoolean(false);
 
     /**
      * Create an {@link AbstractPollingIoProcessor} with the given {@link Executor}
@@ -403,6 +406,14 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
         // can be activated immediately. 
         wakeup();
     }
+    
+    
+    /**
+     * In the case we are using the java select() method, this method is
+     * used to trash the buggy selector and create a new one, registring
+     * all the sockets on it.
+     */
+    abstract protected void registerNewSelector() throws IOException;
 
     /**
      * Loops over the new sessions blocking queue and returns
@@ -906,11 +917,43 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
 
             for (;;) {
                 try {
+                    long t0 = System.currentTimeMillis();
                     // This select has a timeout so that we can manage
                     // idle session when we get out of the select every
                     // second. (note : this is a hack to avoid creating
                     // a dedicated thread).
                     int selected = select(SELECT_TIMEOUT);
+
+                    synchronized(wakeupCalled) {
+                        long t1 = System.currentTimeMillis();
+                        
+                        if (selected == 0) {
+                            if ( ! wakeupCalled.get()) {
+                                if ((t1 - t0) < 100) {
+                                    System.out.println("Create a new selector. Selected is 0, delta = " + (t1 - t0));
+                                    // Ok, we are hit by the nasty epoll spinning.
+                                    // Basically, tehre is a race condition which cause 
+                                    // a closing file descriptor not to be considered as 
+                                    // available as a selected channel, but it stopped
+                                    // the select. The next time we will call select(),
+                                    // it will exit immediately for the same reason, 
+                                    // and do so forever, consuming 100% CPU.
+                                    // We have to destroy the selector, and register all 
+                                    // the socket on a new one.
+                                    registerNewSelector();
+                                    
+                                    // and continue the loop
+                                    //continue;
+                                }
+                            } else {
+                                //System.out.println("Waited one second");
+                            }
+                        } else {
+                            //System.out.println("Nb selected : " + selected);
+                        }
+    
+                        wakeupCalled.getAndSet(false);
+                    }
 
                     nSessions += handleNewSessions();
                     updateTrafficMask();
@@ -918,6 +961,7 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
                     // Now, if we have had some incoming or outgoing events,
                     // deal with them
                     if (selected > 0) {
+                        //System.out.println( "Proccessing ...");
                         process();
                     }
 

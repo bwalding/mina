@@ -40,7 +40,9 @@ import org.apache.mina.core.polling.AbstractPollingIoProcessor;
  */
 public final class NioProcessor extends AbstractPollingIoProcessor<NioSession> {
     /** The selector associated with this processor */
-    private final Selector selector;
+    private Selector selector;
+    
+    private Object lock = new Object();
 
     /**
      * 
@@ -80,7 +82,10 @@ public final class NioProcessor extends AbstractPollingIoProcessor<NioSession> {
 
     @Override
     protected void wakeup() {
-        selector.wakeup();
+        synchronized(wakeupCalled) {
+            wakeupCalled.getAndSet(true);
+            selector.wakeup();
+        }
     }
 
     @Override
@@ -109,6 +114,32 @@ public final class NioProcessor extends AbstractPollingIoProcessor<NioSession> {
         }
         ch.close();
     }
+    
+    
+    /**
+     * In the case we are using the java select() method, this method is
+     * used to trash the buggy selector and create a new one, registring
+     * all the sockets on it.
+     */
+    protected void registerNewSelector() throws IOException {
+        synchronized (selector) {
+            Set<SelectionKey> keys = selector.keys();
+            
+            // Open a new selector
+            Selector newSelector = Selector.open();
+            
+            for ( SelectionKey key:keys ) {
+                SelectableChannel ch = key.channel();
+                ch.register(newSelector, key.interestOps());
+            }
+
+            selector.close();
+            selector = newSelector;
+        }
+        
+        
+    }
+    
 
     @Override
     protected SessionState state(NioSession session) {

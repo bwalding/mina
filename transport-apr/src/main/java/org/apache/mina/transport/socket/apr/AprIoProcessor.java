@@ -455,4 +455,13 @@ public final class AprIoProcessor extends AbstractPollingIoProcessor<AprSession>
                 org.apache.tomcat.jni.Error.strerror(-code) +
                 " (code: " + code + ")");
     }
+
+    /**
+     * In the case we are using the java select() method, this method is
+     * used to trash the buggy selector and create a new one, registring
+     * all the sockets on it.
+     */
+    protected void registerNewSelector() {
+        // Do nothing
+    }
 }

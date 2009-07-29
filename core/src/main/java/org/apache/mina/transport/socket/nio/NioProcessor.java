@@ -32,6 +32,7 @@ import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.file.FileRegion;
 import org.apache.mina.core.polling.AbstractPollingIoProcessor;
+import org.apache.mina.core.session.SessionState;
 
 /**
  * TODO Add documentation
@@ -42,8 +43,6 @@ public final class NioProcessor extends AbstractPollingIoProcessor<NioSession> {
     /** The selector associated with this processor */
     private Selector selector;
     
-    private Object lock = new Object();
-
     /**
      * 
      * Creates a new instance of NioProcessor.
@@ -118,7 +117,7 @@ public final class NioProcessor extends AbstractPollingIoProcessor<NioSession> {
     
     /**
      * In the case we are using the java select() method, this method is
-     * used to trash the buggy selector and create a new one, registring
+     * used to trash the buggy selector and create a new one, registering
      * all the sockets on it.
      */
     protected void registerNewSelector() throws IOException {
@@ -141,14 +140,25 @@ public final class NioProcessor extends AbstractPollingIoProcessor<NioSession> {
     }
     
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected SessionState state(NioSession session) {
+    protected SessionState getState(NioSession session) {
         SelectionKey key = session.getSelectionKey();
+        
         if (key == null) {
-            return SessionState.PREPARING;
+            // The channel is not yet registred to a selector 
+            return SessionState.OPENING;
         }
 
-        return key.isValid()? SessionState.OPEN : SessionState.CLOSED;
+        if (key.isValid()) {
+            // The session is oepened
+            return SessionState.OPENED;
+        } else { 
+            // The session still as to be closed
+            return SessionState.CLOSING;
+        }
     }
 
     @Override
@@ -180,11 +190,13 @@ public final class NioProcessor extends AbstractPollingIoProcessor<NioSession> {
         SelectionKey key = session.getSelectionKey();
         int oldInterestOps = key.interestOps();
         int newInterestOps;
+        
         if (value) {
             newInterestOps = oldInterestOps | SelectionKey.OP_READ;
         } else {
             newInterestOps = oldInterestOps & ~SelectionKey.OP_READ;
         }
+        
         if (oldInterestOps != newInterestOps) {
             key.interestOps(newInterestOps);
         }

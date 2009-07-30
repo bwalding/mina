@@ -337,22 +337,24 @@ public final class AprIoProcessor extends AbstractPollingIoProcessor<AprSession>
      * {@inheritDoc}
      */
     @Override
-    protected void setInterestedInRead(AprSession session, boolean value) throws Exception {
-        if (session.isInterestedInRead() == value) {
+    protected void setInterestedInRead(AprSession session, boolean isInterested) throws Exception {
+        if (session.isInterestedInRead() == isInterested) {
             return;
         }
 
         int rv = Poll.remove(pollset, session.getDescriptor());
+        
         if (rv != Status.APR_SUCCESS) {
             throwException(rv);
         }
 
-        int flags = (value ? Poll.APR_POLLIN : 0)
+        int flags = (isInterested ? Poll.APR_POLLIN : 0)
                 | (session.isInterestedInWrite() ? Poll.APR_POLLOUT : 0);
 
         rv = Poll.add(pollset, session.getDescriptor(), flags);
+        
         if (rv == Status.APR_SUCCESS) {
-            session.setInterestedInRead(value);
+            session.setInterestedInRead(isInterested);
         } else {
             throwException(rv);
         }
@@ -362,22 +364,24 @@ public final class AprIoProcessor extends AbstractPollingIoProcessor<AprSession>
      * {@inheritDoc}
      */
     @Override
-    protected void setInterestedInWrite(AprSession session, boolean value) throws Exception {
-        if (session.isInterestedInWrite() == value) {
+    protected void setInterestedInWrite(AprSession session, boolean isInterested) throws Exception {
+        if (session.isInterestedInWrite() == isInterested) {
             return;
         }
 
         int rv = Poll.remove(pollset, session.getDescriptor());
+        
         if (rv != Status.APR_SUCCESS) {
             throwException(rv);
         }
 
         int flags = (session.isInterestedInRead() ? Poll.APR_POLLIN : 0)
-                | (value ? Poll.APR_POLLOUT : 0);
+                | (isInterested ? Poll.APR_POLLOUT : 0);
 
         rv = Poll.add(pollset, session.getDescriptor(), flags);
+        
         if (rv == Status.APR_SUCCESS) {
-            session.setInterestedInWrite(value);
+            session.setInterestedInWrite(isInterested);
         } else {
             throwException(rv);
         }
@@ -459,11 +463,17 @@ public final class AprIoProcessor extends AbstractPollingIoProcessor<AprSession>
     }
 
     /**
-     * In the case we are using the java select() method, this method is
-     * used to trash the buggy selector and create a new one, registring
-     * all the sockets on it.
+     * {@inheritDoc}
      */
     protected void registerNewSelector() {
         // Do nothing
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    protected boolean isBrokenConnection() throws IOException {
+        // Here, we assume that this is the case.
+        return true;
     }
 }

@@ -48,6 +48,8 @@ import org.apache.mina.core.write.WriteToClosedSessionException;
 import org.apache.mina.transport.socket.AbstractDatagramSessionConfig;
 import org.apache.mina.util.ExceptionMonitor;
 import org.apache.mina.util.NamePreservingRunnable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract implementation of {@link IoProcessor} which helps
@@ -59,6 +61,9 @@ import org.apache.mina.util.NamePreservingRunnable;
  */
 public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
         implements IoProcessor<T> {
+    /** A logger for this class */
+    private final static Logger LOG = LoggerFactory.getLogger(IoProcessor.class);
+
     /**
      * The maximum loop count for a write operation until
      * {@link #write(AbstractIoSession, IoBuffer, int)} returns non-zero value.
@@ -271,7 +276,7 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
      * @param session the session registered
      * @param interested true for registering, false for removing
      */
-    protected abstract void setInterestedInRead(T session, boolean interested)
+    protected abstract void setInterestedInRead(T session, boolean isInterested)
             throws Exception;
 
     /**
@@ -416,9 +421,22 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
      * In the case we are using the java select() method, this method is
      * used to trash the buggy selector and create a new one, registring
      * all the sockets on it.
+     * @throws IOException If we got an exception
      */
     abstract protected void registerNewSelector() throws IOException;
 
+    
+    /**
+     * Check that the select() has not exited immediately just because of
+     * a broken connection. In this case, this is a standard case, and we
+     * just have to loop.
+     * 
+     * @return true if a connection has been brutally closed.
+     * @throws IOException If we got an exception
+     */
+    abstract protected boolean isBrokenConnection() throws IOException;
+
+    
     /**
      * Loops over the new sessions blocking queue and returns
      * the number of sessions which are effectively created
@@ -881,12 +899,19 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
         filterChain.fireMessageSent(req);
     }
 
+    /**
+     * Update the trafficControl for all the session which has
+     * just been opened. 
+     */
     private void updateTrafficMask() {
-        for (;;) {
+        int queueSize = trafficControllingSessions.size();
+        
+        while (queueSize > 0) {
             T session = trafficControllingSessions.poll();
 
             if (session == null) {
-                break;
+                // We are done with this queue.
+                return;
             }
 
             SessionState state = getState(session);
@@ -903,26 +928,33 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
                     // Retry later if session is not yet fully initialized.
                     // (In case that Session.suspend??() or session.resume??() is
                     // called before addSession() is processed)
-                    scheduleTrafficControl(session);
-                    return;
-                    
-                default:
-                    throw new IllegalStateException(String.valueOf(state));
+                    // We just put back the session at the end of the queue.
+                    trafficControllingSessions.add(session);
+                    break;
             }
+            
+            // As we have handled one session, decrement the number of 
+            // remaining sessions.
+            queueSize--;
         }
     }
 
+    /**
+     * Update the key's interest for READ and WRITE for this session.
+     */
     public void updateTrafficControl(T session) {
+        // 
         try {
             setInterestedInRead(session, !session.isReadSuspended());
         } catch (Exception e) {
             IoFilterChain filterChain = session.getFilterChain();
             filterChain.fireExceptionCaught(e);
         }
+        
         try {
-            setInterestedInWrite(session, !session.getWriteRequestQueue()
-                    .isEmpty(session)
-                    && !session.isWriteSuspended());
+            setInterestedInWrite(session, 
+                !session.getWriteRequestQueue().isEmpty(session) && 
+                !session.isWriteSuspended());
         } catch (Exception e) {
             IoFilterChain filterChain = session.getFilterChain();
             filterChain.fireExceptionCaught(e);
@@ -950,20 +982,27 @@ public abstract class AbstractPollingIoProcessor<T extends AbstractIoSession>
                         if (selected == 0) {
                             if ( ! wakeupCalled.get()) {
                                 if (delta < 100) {
-                                    System.out.println("Create a new selector. Selected is 0, delta = " + (t1 - t0));
-                                    // Ok, we are hit by the nasty epoll spinning.
-                                    // Basically, there is a race condition which cause 
-                                    // a closing file descriptor not to be considered as 
-                                    // available as a selected channel, but it stopped
-                                    // the select. The next time we will call select(),
-                                    // it will exit immediately for the same reason, 
-                                    // and do so forever, consuming 100% CPU.
-                                    // We have to destroy the selector, and register all 
-                                    // the socket on a new one.
-                                    registerNewSelector();
-                                    
+                                    // Last chance : the select() may have been interrupted
+                                    // because we have had an closed channel.
+                                    if ( isBrokenConnection() ) {
+                                        // we can reselect immediately
+                                        continue;
+                                    } else {
+                                        LOG.warn("Create a new selector. Selected is 0, delta = " + (t1 - t0));
+                                        // Ok, we are hit by the nasty epoll spinning.
+                                        // Basically, there is a race condition which cause 
+                                        // a closing file descriptor not to be considered as 
+                                        // available as a selected channel, but it stopped
+                                        // the select. The next time we will call select(),
+                                        // it will exit immediately for the same reason, 
+                                        // and do so forever, consuming 100% CPU.
+                                        // We have to destroy the selector, and register all 
+                                        // the socket on a new one.
+                                        registerNewSelector();
+                                    }
+                                        
                                     // and continue the loop
-                                    //continue;
+                                    continue;
                                 }
                             } else {
                                 //System.out.println("Waited one second");

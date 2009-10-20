@@ -40,12 +40,23 @@ public abstract class AbstractIoSession implements IoSession {
     
     private long id;
     
+    private long creationTime;
+    
+    
+    private long readBytes;
+    private long writtenBytes;
+
+    // variable for idle checking
+    private long lastReadTime;
+    private long lastWriteTime;
+    
     /**
      * Create an {@link IoSession} with a unique identifier ({@link IoSession#getId()})
      */
     public AbstractIoSession() {
         // generated a unique id
         id = NEXT_ID.getAndIncrement();
+        creationTime = System.currentTimeMillis();
         LOG.debug("Created new session with id : {}",id);
     }
     
@@ -54,4 +65,34 @@ public abstract class AbstractIoSession implements IoSession {
         return id;
     }
     
-} 
+    @Override
+    public long getCreationTime() {
+        return creationTime;
+    }
+    
+    @Override
+    public long getReadBytes() {
+        return readBytes;
+    }
+    
+    @Override
+    public long getWrittenBytes() {
+        return writtenBytes;
+    }
+    
+    @Override
+    public long getLastReadTime() {
+        return lastReadTime;
+    }
+    
+    @Override
+    public long getLastWriteTime() {
+        return lastWriteTime;
+    }
+    
+    @Override
+    public final long getLastIoTime() {
+        return Math.max(lastReadTime, lastWriteTime);
+    }
+    
+}

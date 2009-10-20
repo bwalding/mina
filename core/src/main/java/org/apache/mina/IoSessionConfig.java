@@ -17,41 +17,26 @@
  *  under the License.
  *
  */
-package org.apache.mina.impl;
-
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.mina.IoSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.apache.mina;
 
 /**
- * Base implementation of {@link IoSession} shared with all the different
- * transports. 
- * 
+ * The configuration of {@link IoSession}.
+ *
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
-public abstract class AbstractIoSession implements IoSession {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractIoSession.class); 
+public interface IoSessionConfig {
 
-    // unique identifier generator
-    private static final AtomicLong NEXT_ID = new AtomicLong(0);
-    
-    private long id;
-    
     /**
-     * Create an {@link IoSession} with a unique identifier ({@link IoSession#getId()})
+     * Returns idle time for the specified type of idleness in milli-seconds.
+     * @see IdleStatus
      */
-    public AbstractIoSession() {
-        // generated a unique id
-        id = NEXT_ID.getAndIncrement();
-        LOG.debug("Created new session with id : {}",id);
-    }
-    
-    @Override
-    public long getId() {
-        return id;
-    }
-    
-} 
+    long getIdleTimeInMillis(IdleStatus status);
+
+    /**
+     * Set the delay before an {@link IoSession} is considered idle for a given
+     * operation type (read/write/both) @see IdleStatus
+     * @param status the type of idle (read/write/both) timeout to set 
+     * @param ildeTimeInMilli the timeout in milliseconds
+     */
+    void setIdleTimeInMillis(IdleStatus status, long ildeTimeInMilli);
+}

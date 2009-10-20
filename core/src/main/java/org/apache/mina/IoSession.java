@@ -147,6 +147,13 @@ public interface IoSession {
     /* IDLE */
     
     /**
+     * get the session configuration, it where the idle timeout are set
+     * and other transport specific configuration. 
+     * @return the configuration of this session.
+     */
+    IoSessionConfig getConfig();
+    
+    /**
      * @return the session's creation time in milliseconds
      */
     long getCreationTime();

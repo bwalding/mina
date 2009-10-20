@@ -49,6 +49,12 @@ import java.util.Set;
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
 public interface IoSession {
+    
+    /**
+     * the unique identifier of this session
+     * @return a unique identifier
+     */
+    long getId();
 
     /* ADDRESSES */
 
@@ -63,7 +69,11 @@ public interface IoSession {
      */
     SocketAddress getLocalAddress();
     
-    
+    /**
+     * @return the {@link IoService} which provides {@link IoSession} to this session.
+     */
+    IoService getService();
+
     /* READ / WRITE / CLOSE */
     
     /**

@@ -22,6 +22,7 @@ package org.apache.mina.session;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.mina.IoService;
@@ -106,4 +107,33 @@ public abstract class AbstractIoSession implements IoSession {
         return Math.max(lastReadTime, lastWriteTime);
     }
     
+    @Override
+    public IoService getService() {
+        return service;
+    }
+    
+    @Override
+    public Object getAttribute(Object name) {
+        return attributes.get(name);
+    }
+    
+    @Override
+    public Object setAttribute(Object name, Object value) {
+        return attributes.put(name, value);
+    }
+    
+    @Override
+    public boolean containsAttribute(Object name) {
+        return attributes.containsKey(name);
+    }
+    
+    @Override
+    public Object removeAttribute(Object name) {
+        return attributes.remove(name);
+    }
+    
+    @Override
+    public Set<Object> getAttributeNames() {
+        return attributes.keySet();
+    }
 }

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.mina.IoService;
@@ -57,8 +58,7 @@ public abstract class AbstractIoSession implements IoSession {
     private volatile long lastWriteTime;
     
     // attributes
-    private final Map<Object, Object> attributes =
-        Collections.synchronizedMap(new HashMap<Object, Object>(4));
+    private final Map<Object, Object> attributes = new ConcurrentHashMap<Object, Object>(4);
     
     /**
      * Create an {@link IoSession} with a unique identifier ({@link IoSession#getId()}) 

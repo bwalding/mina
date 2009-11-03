@@ -48,13 +48,17 @@ public interface IoAcceptor extends IoService {
      * Unbinds from all local addresses that this service is bound to and stops
      * to accept incoming connections. This method returns silently if no local
      * address is bound yet.
+     * @throws IOException
+     *             if failed to unbind
      */
-    void unbindAll();
+    void unbindAll() throws IOException;
 
     /**
      * Unbinds from the specified local addresses and stop to accept incoming
      * connections. This method returns silently if the default local addresses
      * are not bound yet.
+     * @throws IOException
+     *             if failed to unbind
      */
-    void unbind(SocketAddress firstLocalAddress, SocketAddress... otherLocalAddresses);
+    void unbind(SocketAddress... localAddresses) throws IOException;
 }

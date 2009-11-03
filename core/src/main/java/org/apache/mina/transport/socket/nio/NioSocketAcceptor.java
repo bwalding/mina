@@ -46,10 +46,16 @@ public class NioSocketAcceptor extends AbstractIoAcceptor {
     public void bind(SocketAddress... localAddress) throws IOException {
    
         for(SocketAddress address : localAddress) {
-            ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-            LOG.debug("binding address {}",address);
-            serverSocketChannel.socket().bind(address);
-            serverSocketChannels.put(address,serverSocketChannel);
+            // check if the address is already bound
+            synchronized (this) {
+                if (serverSocketChannels.containsKey(address)) {
+                    throw new IOException("address "+address+" already bound");
+                }
+                ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+                LOG.debug("binding address {}",address);
+                serverSocketChannel.socket().bind(address);
+                serverSocketChannels.put(address,serverSocketChannel); 
+            }
         }
     }
 
@@ -62,11 +68,14 @@ public class NioSocketAcceptor extends AbstractIoAcceptor {
     public void unbind(SocketAddress... localAddresses) throws IOException {
         for (SocketAddress socketAddress : localAddresses) {
             LOG.debug("unbinding {}",socketAddress);
-            ServerSocketChannel channel = serverSocketChannels.get(socketAddress);
-            if (channel == null) {
-                throw new InvalidParameterException("localAddresses");
+            synchronized (this) {
+                ServerSocketChannel channel = serverSocketChannels.get(socketAddress);
+                if (channel == null) {
+                    throw new InvalidParameterException("localAddresses");
+                }
+                channel.socket().close();
+                serverSocketChannels.remove(socketAddress);
             }
-            channel.socket().close();
         }
     }
 

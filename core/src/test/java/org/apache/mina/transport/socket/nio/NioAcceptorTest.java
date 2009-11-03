@@ -50,6 +50,7 @@ public class NioAcceptorTest {
         try {
             // try to bind an already bound port
             acceptor.bind(new InetSocketAddress(9999));
+            
             Assert.fail();
             
         } catch (IOException e) {

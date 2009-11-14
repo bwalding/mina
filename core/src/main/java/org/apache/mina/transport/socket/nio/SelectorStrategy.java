@@ -17,14 +17,22 @@
  *  under the License.
  *
  */
-
 package org.apache.mina.transport.socket.nio;
 
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+
 /**
- * 
+ * Strategy for balancing server socket and client socket to different selecting/polling threads.
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  *
  */
-public class SelectorProcessor {
+public interface SelectorStrategy {
 
+    void addServerSocket(ServerSocketChannel serverSocketChannel);
+    
+    void removeServerSocket(ServerSocketChannel serverSocketChannel);
+    
+    void createSession(NioSelectorProcessor fromProcessor,SocketChannel newClient);
+    
 }

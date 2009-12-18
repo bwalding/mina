@@ -25,7 +25,11 @@ import java.net.InetSocketAddress;
 
 import junit.framework.Assert;
 
+import org.apache.mina.service.OneThreadSelectorStrategy;
+import org.apache.mina.service.SelectorFactory;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -34,26 +38,42 @@ import org.junit.Test;
  *
  */
 public class NioAcceptorTest {
-
+    
+    static final private Logger LOG = LoggerFactory.getLogger(NioAcceptorTest.class);
+    
     @Test
     public void acceptorTest() {
-        NioSocketAcceptor acceptor = new NioSocketAcceptor();
+        LOG.info("starting NioAcceptorTest");
+        
+        OneThreadSelectorStrategy strategy = new OneThreadSelectorStrategy(new SelectorFactory(NioSelectorProcessor.class));
+        NioSocketAcceptor acceptor = new NioSocketAcceptor(strategy);
         try {
             acceptor.bind(new InetSocketAddress(9999));
+            LOG.debug("Waiting 25 sec");
+            Thread.sleep(25000);
+            LOG.debug("Unbinding");
+            
             acceptor.unbind(new InetSocketAddress(9999));
+            LOG.debug("Trying to rebind the freed port");            
             acceptor.bind(new InetSocketAddress(9999));
+            LOG.debug("Bound");
         } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        } catch (InterruptedException e) {
             e.printStackTrace();
             Assert.fail();
         }
         Exception ex = null;
         try {
+            LOG.info("Trying to bind an already bound port");
             // try to bind an already bound port
             acceptor.bind(new InetSocketAddress(9999));
             
             Assert.fail();
             
         } catch (IOException e) {
+            LOG.info("catching the exception",e);
             ex = e;
         }
         Assert.assertNotNull(ex);

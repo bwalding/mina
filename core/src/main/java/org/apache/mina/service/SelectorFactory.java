@@ -36,13 +36,13 @@ public class SelectorFactory {
     
     private static final Logger LOG = Logger.getLogger(SelectorFactory.class);
         
-    private Constructor<?> constructor;
+    private Constructor<? extends SelectorProcessor> constructor;
     
     /**
      * create a factory for the given {@link SelectorProcessor} type.
      * @param selectorClass
      */
-    public SelectorFactory(Class<SelectorProcessor> selectorClass) {
+    public SelectorFactory(Class<? extends SelectorProcessor> selectorClass) {
         try {
             constructor = selectorClass.getDeclaredConstructor(new Class<?>[]{String.class,SelectorStrategy.class});
         } catch (NoSuchMethodException e) {

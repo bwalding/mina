@@ -21,11 +21,9 @@ package org.apache.mina.transport.socket.nio;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.nio.channels.ServerSocketChannel;
-import java.security.InvalidParameterException;
-import java.util.Map;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.mina.service.AbstractIoAcceptor;
 import org.slf4j.Logger;
@@ -41,8 +39,11 @@ public class NioSocketAcceptor extends AbstractIoAcceptor {
     
     static final Logger LOG = LoggerFactory.getLogger(NioSocketAcceptor.class);
     
+    // list of bound addresses
+    private Set<SocketAddress> addresses = Collections.synchronizedSet(new HashSet<SocketAddress>());
+    
     // map of the created selection keys, mainly used for cancelling them.
-    private Map<SocketAddress,ServerSocketChannel> serverSocketChannels = new ConcurrentHashMap<SocketAddress, ServerSocketChannel>();
+   // private Map<SocketAddress,NioSelectorProcessor> serverSocketChannels = new ConcurrentHashMap<SocketAddress, NioSelectorProcessor>();
     
     // the strategy for dispatching servers and client to selector threads.
     private SelectorStrategy strategy;
@@ -58,23 +59,20 @@ public class NioSocketAcceptor extends AbstractIoAcceptor {
         for(SocketAddress address : localAddress) {
             // check if the address is already bound
             synchronized (this) {
-                if (serverSocketChannels.containsKey(address)) {
+                if (addresses.contains(address)) {
                     throw new IOException("address "+address+" already bound");
                 }
-                ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
                 LOG.debug("binding address {}",address);
-                serverSocketChannel.socket().bind(address);
-                serverSocketChannel.configureBlocking(false);
-                serverSocketChannels.put(address,serverSocketChannel);
-                // add the server socket to the acceptor selector thread
-                strategy.addServerSocket(serverSocketChannel);
+                addresses.add(address);
+                NioSelectorProcessor processor = (NioSelectorProcessor)strategy.getSelectorForBindNewAddress();
+                processor.bindAndAcceptAddress(address);
             }
         }
     }
 
     @Override
     public Set<SocketAddress> getLocalAddresses() {
-        return serverSocketChannels.keySet();
+        return addresses;
     }
 
     @Override
@@ -82,21 +80,14 @@ public class NioSocketAcceptor extends AbstractIoAcceptor {
         for (SocketAddress socketAddress : localAddresses) {
             LOG.debug("unbinding {}",socketAddress);
             synchronized (this) {
-                ServerSocketChannel channel = serverSocketChannels.get(socketAddress);
-                if (channel == null) {
-                    throw new InvalidParameterException("localAddresses");
-                }
-                channel.socket().close();
-                serverSocketChannels.remove(socketAddress);
-                // remove the server socket form the selector accepting connections 
-                strategy.removeServerSocket(channel);
+                strategy.unbind(socketAddress);
             }
         }
     }
 
     @Override
     public void unbindAll() throws IOException {
-        for (SocketAddress socketAddress:serverSocketChannels.keySet()) {
+        for (SocketAddress socketAddress: addresses) {
             unbind(socketAddress);
         }
     }

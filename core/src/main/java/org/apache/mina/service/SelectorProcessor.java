@@ -17,22 +17,37 @@
  *  under the License.
  *
  */
-package org.apache.mina.transport.socket.nio;
+
+package org.apache.mina.service;
 
 import java.io.IOException;
 import java.net.SocketAddress;
 
-import org.apache.mina.service.SelectorProcessor;
-
 /**
- * Strategy for balancing server socket and client socket to different selecting/polling threads.
+ * A processor in charge of a group of client session and server sockets.
+ *
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
+ *
  */
-public interface SelectorStrategy {
+public interface SelectorProcessor {
     
-    SelectorProcessor getSelectorForNewSession(SelectorProcessor acceptingProcessor);
+    /**
+     * create a session for a freshly accepted client socket
+     * @param clientChannel
+     */
+    void createSession(Object clientSocket);
     
-    SelectorProcessor getSelectorForBindNewAddress();
+    /**
+     * Bind and start processing this new server address
+     * @param address local address to bind
+     * @throws IOException exception thrown if any problem occurs while binding
+     */
+    void bindAndAcceptAddress(SocketAddress address) throws IOException;
     
+    /**
+     * Stop processing and unbind this server address
+     * @param address the local server address to unbind
+     * @throws IOException exception thrown if any problem occurs while unbinding
+     */
     void unbind(SocketAddress address) throws IOException;
 }

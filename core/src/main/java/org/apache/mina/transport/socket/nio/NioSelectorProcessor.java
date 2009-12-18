@@ -21,6 +21,7 @@
 package org.apache.mina.transport.socket.nio;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -28,9 +29,11 @@ import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.mina.IoSession;
+import org.apache.mina.service.SelectorProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +42,14 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  *
  */
-public class NioSelectorProcessor {
+public class NioSelectorProcessor implements SelectorProcessor {
 
     private SelectorStrategy strategy;
         
     private Logger log;
     
+    private Map<SocketAddress,ServerSocketChannel> serverSocketChannels = new ConcurrentHashMap<SocketAddress, ServerSocketChannel>();
+
     public NioSelectorProcessor(String name,SelectorStrategy strategy) {
         this.strategy = strategy;
         this.log = LoggerFactory.getLogger("SelectorProcessor["+name+"]");
@@ -75,13 +80,7 @@ public class NioSelectorProcessor {
         serverToAdd.add(serverChannel);
         wakeupWorker();
     }
-    
-    public void remove(ServerSocketChannel serverChannel) {
-        log.debug("removing a server channel "+serverChannel);
-        serverToRemove.add(serverChannel);
-        wakeupWorker();
-    }
-    
+        
     private Object workerLock = new Object();
     
     private SelectorWorker worker = null;
@@ -98,6 +97,32 @@ public class NioSelectorProcessor {
         }
     }
     
+    @Override
+    public void bindAndAcceptAddress(SocketAddress address) throws IOException {
+        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        
+        serverSocketChannel.socket().bind(address);
+        serverSocketChannel.configureBlocking(false);
+        serverSocketChannels.put(address,serverSocketChannel);
+        add(serverSocketChannel);
+        
+                
+    }
+    
+    @Override
+    public void unbind(SocketAddress address) throws IOException {
+        ServerSocketChannel channel = serverSocketChannels.get(address);
+        channel.socket().close();
+        serverSocketChannels.remove(channel);
+        log.debug("removing a server channel "+channel);
+        serverToRemove.add(channel);
+        wakeupWorker();
+    }
+    
+    @Override
+    public void createSession(Object clientSocket) {
+        // TODO Auto-generated method stub        
+    }
 
     private class SelectorWorker extends Thread {
         
@@ -126,7 +151,6 @@ public class NioSelectorProcessor {
                                 log.error("The server socket was already removed of the selector");
                             } else {
                                 key.cancel();
-                                
                             }
                         }
                     }
@@ -152,6 +176,7 @@ public class NioSelectorProcessor {
                                 SocketChannel newClientChannel = ((ServerSocketChannel)key.attachment()).accept();
                                 log.debug("client accepted");
                                 // and give it's to the strategy
+                                strategy.getSelectorForNewSession(NioSelectorProcessor.this).createSession(newClientChannel);
                                 
                             }
                         }
@@ -169,5 +194,5 @@ public class NioSelectorProcessor {
                 }
             } 
         }
-    }
+    }    
 }

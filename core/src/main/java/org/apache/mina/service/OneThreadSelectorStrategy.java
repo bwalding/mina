@@ -22,7 +22,6 @@ package org.apache.mina.service;
 import java.io.IOException;
 import java.net.SocketAddress;
 
-import org.apache.mina.transport.socket.nio.SelectorStrategy;
 
 /**
  * A strategy for using only one thread, for accepting and processing all

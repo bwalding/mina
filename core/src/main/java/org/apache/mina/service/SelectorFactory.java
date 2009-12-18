@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.mina.transport.socket.nio.SelectorStrategy;
 
 /**
  * A factory used by {@link SelectorStrategy} for instantiating selectors when needed.

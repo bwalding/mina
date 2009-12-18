@@ -17,12 +17,11 @@
  *  under the License.
  *
  */
-package org.apache.mina.transport.socket.nio;
+package org.apache.mina.service;
 
 import java.io.IOException;
 import java.net.SocketAddress;
 
-import org.apache.mina.service.SelectorProcessor;
 
 /**
  * Strategy for balancing server socket and client socket to different selecting/polling threads.

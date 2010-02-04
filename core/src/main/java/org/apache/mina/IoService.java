@@ -37,5 +37,16 @@ public interface IoService {
      * @return the sessions. An empty collection if there's no session.
      */
     Map<Long, IoSession> getManagedSessions();
+    
+    /**
+     * Adds an {@link IoServiceListener} that listens any events related with
+     * this service.
+     */
+    void addListener(IoServiceListener listener);
 
+    /**
+     * Removed an existing {@link IoServiceListener} that listens any events
+     * related with this service.
+     */
+    void removeListener(IoServiceListener listener);
 }

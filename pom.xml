@@ -32,7 +32,8 @@
   </organization>
   <groupId>org.apache.mina</groupId>
   <version>3.0.0-M1-SNAPSHOT</version>
-  <artifactId>build</artifactId>
+  <!--artifactId>build</artifactId-->
+  <artifactId>mina-parent</artifactId>
   <name>Apache MINA</name>
   <packaging>pom</packaging>
 
@@ -76,10 +77,80 @@
     </license>
   </licenses>
 
+  <properties>
+    <version.slf4j.api>1.5.11</version.slf4j.api>
+    <version.slf4j.log4j12>1.5.11</version.slf4j.log4j12>
+    <version.slf4j.jcl.over.slf4j>1.5.11</version.slf4j.jcl.over.slf4j>
+      <version.log4j>1.2.14</version.log4j>
+      <version.junit>4.7</version.junit>
+  </properties>  
+
 
   <modules>
     <module>core</module>
   </modules>
+
+    <dependencyManagement>
+    <dependencies>
+    <!-- Logging -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${version.slf4j.api}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${version.slf4j.jcl.over.slf4j}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${version.slf4j.log4j12}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${version.log4j}</version>
+      </dependency>
+
+      <!-- Testing -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${version.junit}</version>
+        <scope>test</scope>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- ==================================== -->
+  <!-- Common dependencies for all projects -->
+  <!-- ==================================== -->
+  <dependencies>
+    <!-- common logging interface -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- logging implementation used for unit tests -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
   
   <build>
     <plugins>

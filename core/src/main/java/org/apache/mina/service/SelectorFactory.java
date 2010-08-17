@@ -19,7 +19,8 @@
  */
 package org.apache.mina.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -33,7 +34,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class SelectorFactory {
     
-    private static final Logger LOG = Logger.getLogger(SelectorFactory.class);
+    static final Logger LOG = LoggerFactory.getLogger(SelectorFactory.class);
         
     private Constructor<? extends SelectorProcessor> constructor;
     

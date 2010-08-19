@@ -54,6 +54,7 @@ public class NioAcceptorTest {
             LOG.debug("Unbinding");
             
             acceptor.unbind(new InetSocketAddress(9999));
+            
             LOG.debug("Trying to rebind the freed port");            
             acceptor.bind(new InetSocketAddress(9999));
             LOG.debug("Bound");

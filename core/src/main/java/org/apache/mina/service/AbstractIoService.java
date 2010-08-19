@@ -19,11 +19,16 @@
  */
 package org.apache.mina.service;
 
+import org.apache.mina.IoService;
+import org.apache.mina.IoServiceListener;
+import org.apache.mina.IoSession;
+
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.mina.IoService;
-import org.apache.mina.IoSession;
+import java.util.concurrent.CopyOnWriteArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation for {@link IoService}s.
@@ -31,11 +36,43 @@ import org.apache.mina.IoSession;
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
 public abstract class AbstractIoService implements IoService {
+
+    static final Logger LOG = LoggerFactory.getLogger(AbstractIoService.class);
     
-   private final Map<Long, IoSession> managedSessions = new ConcurrentHashMap<Long, IoSession>();
+    private final Map<Long, IoSession> managedSessions = new ConcurrentHashMap<Long, IoSession>();
+
+    /**
+     * Placeholder for storing all the listeners added
+     */
+    private final List<IoServiceListener> listeners = new CopyOnWriteArrayList<IoServiceListener>(); 
 
     @Override
     public Map<Long, IoSession> getManagedSessions() {
         return managedSessions;
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public void addListener(IoServiceListener listener) {
+        if(listener != null) {
+            listeners.add(listener);
+            return;
+        }
+
+        LOG.warn("Trying to add Null Listener");
+    }
+
+    /**
+     *
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeListener(IoServiceListener listener) {
+        if(listener != null) {
+            listeners.remove(listener);    
+        }
     }
 }

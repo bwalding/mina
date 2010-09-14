@@ -131,9 +131,6 @@
     <module>mina-integration-ognl</module>
     <module>mina-integration-jmx</module>
     <module>mina-example</module>
-
-    <!-- This module *must* be the last one -->
-    <module>distribution</module>
   </modules>
 
   <dependencyManagement>
@@ -361,14 +358,10 @@
     
     <profile>
       <id>distribution</id>
-      <activation>
-       <file>
-         <exists>pom.xml</exists>
-       </file>
-     </activation>
-     <modules>
-       <module>distribution</module>
-     </modules>
+       <modules>
+         <module>mina-transport-serial</module>
+         <module>distribution</module>
+       </modules>
     </profile>
   </profiles>
   

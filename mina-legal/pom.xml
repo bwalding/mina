@@ -51,21 +51,21 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>${version.maven.plugin.api}</version>
+            <version>${version.api.plugin}</version>
             <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
-            <version>${version.maven.model}</version>
+            <version>${version.model.plugin}</version>
             <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
-            <version>${version.maven.project}</version>
+            <version>${version.project.plugin}</version>
             <optional>true</optional>
         </dependency>
 

@@ -81,13 +81,17 @@
   <!-- Define the version for each of the used jar and maven plugins -->
   <properties>
     <!-- Maven Plugins -->
+    <version.api.plugin>2.2.1</version.api.plugin>
     <version.assembly.plugin>2.2-beta-5</version.assembly.plugin>
     <version.clean.plugin>2.3</version.clean.plugin>
     <version.compiler.plugin>2.1</version.compiler.plugin>
     <version.deploy.plugin>2.5</version.deploy.plugin>
+    <version.gpg.plugin>1.1</version.gpg.plugin>
     <version.jar.plugin>2.3</version.jar.plugin>
     <version.javadoc.plugin>2.6.1</version.javadoc.plugin>
     <version.jxr.plugin>2.1</version.jxr.plugin>
+    <version.model.plugin>2.2.1</version.model.plugin>
+    <version.project.plugin>2.2.1</version.project.plugin>
     <version.rat.maven.plugin>1.0-alpha-3</version.rat.maven.plugin>
     <version.release.plugin>2.0</version.release.plugin>
     <version.remote.resources.plugin>1.1</version.remote.resources.plugin>
@@ -95,10 +99,6 @@
     <version.source.plugin>2.1.1</version.source.plugin>
     <version.shade.plugin>1.3</version.shade.plugin>
     <version.surefire.plugin>2.4.3</version.surefire.plugin>
-
-    <version.maven.plugin.api>2.2.1</version.maven.plugin.api>
-    <version.maven.project>2.2.1</version.maven.project>
-    <version.maven.model>2.2.1</version.maven.model>
 
     <!-- Jars -->
     <version.commons.lang>2.5</version.commons.lang>
@@ -402,6 +402,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${version.javadoc.plugin}</version>
             <configuration>
               <encoding>${project.build.sourceEncoding}</encoding>
             </configuration>
@@ -414,45 +415,45 @@
               </execution>
             </executions>
           </plugin>
-
-          <!-- Creates the packages -->
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>2.2-beta-2</version>
-            <executions>
-
-              <!-- Creates the sources package -->
-              <execution>
-                <id>src</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <descriptors>
-                    <descriptor>src/main/assembly/src.xml</descriptor>
-                  </descriptors>
-                  <tarLongFileMode>gnu</tarLongFileMode>
-                </configuration>
-              </execution>
-
-              <!-- Creates the binaries package -->
-              <execution>
-                <id>bin</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <descriptors>
-                    <descriptor>src/main/assembly/bin.xml</descriptor>
-                  </descriptors>
-                  <tarLongFileMode>gnu</tarLongFileMode>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
+        
+          <!-- Creates the packages --> 	 
+          <plugin> 	 
+            <artifactId>maven-assembly-plugin</artifactId> 	 
+            <version>2.2-beta-2</version> 	 
+            <executions> 	 
+  	
+              <!-- Creates the sources package --> 	 
+              <execution> 	 
+                <id>src</id> 	 
+                <phase>package</phase> 	 
+                <goals> 	 
+                  <goal>single</goal> 	 
+                </goals> 	 
+                <configuration> 	 
+                  <descriptors> 	 
+                    <descriptor>src/main/assembly/src.xml</descriptor> 	 
+                  </descriptors> 	 
+                  <tarLongFileMode>gnu</tarLongFileMode> 	 
+                </configuration> 	 
+              </execution> 	 
+  	 
+              <!-- Creates the binaries package --> 	 
+              <execution> 	 
+                <id>bin</id> 	 
+                <phase>deploy</phase> 	 
+                <goals> 	 
+                  <goal>single</goal> 	 
+                </goals> 	 
+                <configuration> 	 
+                  <descriptors> 	 
+                    <descriptor>src/main/assembly/bin.xml</descriptor> 	 
+                  </descriptors> 	 
+                  <tarLongFileMode>gnu</tarLongFileMode> 	 
+                </configuration> 	 
+              </execution> 	 
+            </executions> 	 
+          </plugin> 	 
+ 
         </plugins>
       </build>
     </profile>      
@@ -506,8 +507,8 @@
           <tagBase>
             https://svn.apache.org/repos/asf/mina/tags
           </tagBase>
-          <preparationGoals>install</preparationGoals>
-          <goals>deploy</goals>
+          <preparationGoals>clean install</preparationGoals>
+          <goals>clean deploy</goals>
           <arguments>-Pmina-release</arguments>
           <mavenExecutorId>forked-path</mavenExecutorId>
         </configuration>

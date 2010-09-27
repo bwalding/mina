@@ -57,14 +57,20 @@ public class NioSocketAcceptor extends AbstractIoAcceptor {
     
     @Override
     public void bind(SocketAddress... localAddress) throws IOException {
-   
+        if ( localAddress == null ) {
+            // We should at least have one address to bind on
+            throw new IllegalStateException( "LocalAdress cannot be null" );
+        }
+        
         for(SocketAddress address : localAddress) {
             // check if the address is already bound
             synchronized (this) {
                 if (addresses.contains(address)) {
                     throw new IOException("address "+address+" already bound");
                 }
+                
                 LOG.debug("binding address {}",address);
+                
                 addresses.add(address);
                 NioSelectorProcessor processor = (NioSelectorProcessor)strategy.getSelectorForBindNewAddress();
                 processor.bindAndAcceptAddress(address);

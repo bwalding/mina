@@ -7,7 +7,7 @@ import junit.framework.Assert;
 import org.apache.mina.CloseFuture;
 import org.apache.mina.IoService;
 import org.apache.mina.IoSessionConfig;
-import org.apache.mina.session.AbstractIoSession;
+import org.apache.mina.service.IoHandler;
 import org.junit.Test;
 
 public class AbstractIoSessionTest {
@@ -72,23 +72,30 @@ public class AbstractIoSessionTest {
         @Override
         public void suspendWrite() {
         }
+
+        @Override
+        public IoHandler getHandler() {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
     @Test
     public void testGetId() {
-        Assert.assertNotSame((new DummySession(null)).getId(), (new DummySession(null)).getId());
-        
+        Assert.assertNotSame((new DummySession(null)).getId(),
+                (new DummySession(null)).getId());
+
     }
 
     @Test
     public void testCreationTime() {
-           long before = System.currentTimeMillis();
-           long creation = (new DummySession(null)).getCreationTime();
-           long after = System.currentTimeMillis();
-           Assert.assertTrue( creation <= after);
-           Assert.assertTrue( creation >= before);
+        long before = System.currentTimeMillis();
+        long creation = (new DummySession(null)).getCreationTime();
+        long after = System.currentTimeMillis();
+        Assert.assertTrue(creation <= after);
+        Assert.assertTrue(creation >= before);
     }
-    
+
     @Test
     public void testAttachment() {
         AbstractIoSession aio = new DummySession(null);

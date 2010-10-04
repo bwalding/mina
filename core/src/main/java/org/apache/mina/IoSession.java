@@ -25,7 +25,7 @@ import java.util.Set;
 import org.apache.mina.service.IoHandler;
 
 /**
- * A handle which represents connection between two end-points regardless of
+ * A handle which represents a connection between two end-points regardless of
  * transport types.
  * <p/>
  * {@link IoSession} provides user-defined attributes. User-defined attributes
@@ -46,20 +46,21 @@ import org.apache.mina.service.IoHandler;
  * be executed simultaneously, and therefore you have to make sure the
  * {@link IoFilter} implementations you're using are thread-safe, too.
  * </p>
- * <p/>
  * 
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
 public interface IoSession {
 
     /**
-     * the unique identifier of this session
+     * The unique identifier of this session.
      * 
-     * @return a unique identifier
+     * @return the session's unique identifier 
      */
     long getId();
 
     /**
+     * Gets the service Handler.
+     * 
      * @return the {@link IoHandler} which handles this session.
      */
     IoHandler getHandler();
@@ -68,30 +69,40 @@ public interface IoSession {
 
     /**
      * Returns the socket address of remote peer.
+     * 
+     * @return the remote socket address
      */
     SocketAddress getRemoteAddress();
 
     /**
-     * Returns the socket address of local machine which is associated with this
+     * Gets the local address of the local peer.
+     * 
+     * @return the socket address of local machine which is associated with this
      * session.
      */
     SocketAddress getLocalAddress();
 
     /**
+     * Gets the service this session is attached to.
+     * 
      * @return the {@link IoService} which provides {@link IoSession} to this
-     *         session.
+     * session.
      */
     IoService getService();
 
     /* READ / WRITE / CLOSE */
-
     /**
-     * Returns <code>true</code> if this session is connected with remote peer.
+     * Tells if the session is currently connected and able to process incoming
+     * requests and to send outgoing responses.
+     * 
+     * @return <code>true</code> if this session is connected with remote peer.
      */
     boolean isConnected();
 
     /**
-     * Returns <code>true</tt> if and only if this session is being closed
+     * Tells if the session is being closed, but is not yet in Closed state.
+     * 
+     * @return <code>true</tt> if and only if this session is being closed
      * (but not disconnected yet) or is closed.
      */
     boolean isClosing();
@@ -100,16 +111,15 @@ public interface IoSession {
      * Closes this session immediately or after all queued write requests are
      * flushed. This operation is asynchronous. Wait for the returned
      * {@link CloseFuture} if you want to wait for the session actually closed.
+     * Once this method has been called, no incoming request will be accepted.
      * 
-     * @param immediately
-     *            {@code true} to close this session immediately. {@code false}
-     *            to close this session after all queued write requests are
-     *            flushed.
+     * @param immediately {@code true} to close this session immediately. {@code false}
+     * to close this session after all queued write requests are flushed.
+     * @return A {@link CloseFuture} that will contains the session's state
      */
     CloseFuture close(boolean immediately);
 
     /* READ/WRITE PAUSE MANAGEMENT */
-
     /**
      * Suspends read operations for this session.
      */
@@ -145,54 +155,62 @@ public interface IoSession {
     boolean isWriteSuspended();
 
     /* BASIC STATS */
-
     /**
+     * Gets the total number of bytes read for this session since it was created.
+     * 
      * Returns the total number of bytes which were read from this session.
      */
     long getReadBytes();
 
     /**
-     * Returns the total number of bytes which were written to this session.
+     * Gets the total number of bytes written for this session since it was created.
+     * 
+     * @return the total number of bytes which were written to this session.
      */
     long getWrittenBytes();
 
-    /* IDLE */
-
+    /* IDLE management */
     /**
-     * get the session configuration, it where the idle timeout are set and
+     * Gets the session configuration, it where the idle timeout are set and
      * other transport specific configuration.
      * 
-     * @return the configuration of this session.
+     * @return the session's configuration
      */
     IoSessionConfig getConfig();
 
     /**
+     * The session's creation time.
+     * 
      * @return the session's creation time in milliseconds
      */
     long getCreationTime();
 
     /**
-     * Returns the time in millis when I/O occurred lastly.
+     * Returns the time in millisecond when I/O occurred lastly (either read or write).
+     * 
+     * @return the time of the last read or write done for this session
      */
     long getLastIoTime();
 
     /**
-     * Returns the time in millis when read operation occurred lastly.
+     * Returns the time in millisecond when the last I/O read occurred.
+     * 
+     * Returns the time in millisecond when read operation occurred lastly.
      */
     long getLastReadTime();
 
     /**
-     * Returns the time in millis when write operation occurred lastly.
+     * Returns the time in millisecond when the last I/O write occurred.
+     * 
+     * Returns the time in millisecond when write operation occurred lastly.
      */
     long getLastWriteTime();
 
-    /* ATTACHEMENT MANAGEMENT */
-
+    /* Session context management */
     /**
-     * Returns the value of the user-defined attribute of this session.
+     * Returns the value of the user-defined attribute for this session.
      * 
-     * @param name
-     *            the name of the attribute
+     * @param name the attribute's name
      * @return <tt>null</tt> if there is no attribute with the specified name
      */
     Object getAttribute(Object name);
@@ -200,31 +218,34 @@ public interface IoSession {
     /**
      * Sets a user-defined attribute.
      * 
-     * @param name
-     *            the name of the attribute
-     * @param value
-     *            the value of the attribute
-     * @return The old value of the attribute. <tt>null</tt> if it is new.
+     * @param name the attribute's name
+     * @param value the attribute's value
+     * @return The old attribute's value. <tt>null</tt> if there is no previous value
+     * or if the value is null
      */
     Object setAttribute(Object name, Object value);
 
     /**
      * Removes a user-defined attribute with the specified name.
      * 
-     * @param name
-     *            the name of the attribute
-     * @return The old value of the attribute. <tt>null</tt> if not found.
+     * @param name the attribute's name
+     * @return The old attribute's value. <tt>null</tt> if not found or if the 
+     * attribute had no value
      */
     Object removeAttribute(Object name);
 
     /**
-     * Returns <tt>true</tt> if this session contains the attribute with the
+     * Tells if the session has an attached attribute.
+     * 
+     * @return <tt>true</tt> if this session contains the attribute with the
      * specified <tt>name</tt>.
      */
     boolean containsAttribute(Object name);
 
     /**
-     * Returns the set of names of all user-defined attributes.
+     * Gets the set of attributes stored within the session.
+     * 
+     * @return the set of names of all user-defined attributes.
      */
     Set<Object> getAttributeNames();
 }

@@ -22,8 +22,6 @@ package org.apache.mina;
 import java.net.SocketAddress;
 import java.util.Set;
 
-import org.apache.mina.service.IoHandler;
-
 /**
  * A handle which represents a connection between two end-points regardless of
  * transport types.
@@ -57,13 +55,6 @@ public interface IoSession {
      * @return the session's unique identifier 
      */
     long getId();
-
-    /**
-     * Gets the service Handler.
-     * 
-     * @return the {@link IoHandler} which handles this session.
-     */
-    IoHandler getHandler();
 
     /* ADDRESSES */
 

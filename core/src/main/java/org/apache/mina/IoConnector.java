@@ -21,8 +21,6 @@ package org.apache.mina;
 
 import java.net.SocketAddress;
 
-import org.apache.mina.service.IoHandler;
-
 /**
  * Connects to endpoint, communicates with the server, and fires events to
  * {@link IoHandler}s.

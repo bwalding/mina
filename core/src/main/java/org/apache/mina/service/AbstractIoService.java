@@ -40,7 +40,7 @@ public abstract class AbstractIoService implements IoService {
     static final Logger LOG = LoggerFactory.getLogger(AbstractIoService.class);
     
     private final Map<Long, IoSession> managedSessions = new ConcurrentHashMap<Long, IoSession>();
-
+    
     /**
      * Placeholder for storing all the listeners added
      */

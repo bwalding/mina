@@ -120,7 +120,8 @@ public class NioSelectorProcessor implements SelectorProcessor {
 
     @Override
     public void createSession(Object clientSocket) {
-        // TODO Auto-generated method stub
+        SocketChannel socketChannel = (SocketChannel) clientSocket;
+        
     }
 
     private class SelectorWorker extends Thread {

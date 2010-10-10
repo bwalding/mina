@@ -22,16 +22,33 @@ package org.apache.mina.service;
 import java.io.IOException;
 import java.net.SocketAddress;
 
+import org.apache.mina.IoSession;
+
 
 /**
  * Strategy for balancing server socket and client socket to different selecting/polling threads.
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
 public interface SelectorStrategy {
-    
+
+    /**
+     * Provide a {@link SelectorProcessor} for a newly accepted {@link IoSession}.
+     * @param acceptingProcessor the selector which accepted the {@link IoSession}
+     * @return a processor for processing the new session
+     */
     SelectorProcessor getSelectorForNewSession(SelectorProcessor acceptingProcessor);
     
+    /**
+     * Provide a {@link SelectorProcessor} for processing a newly bound address.
+     * The processor will accept the incoming connections.
+     * @return
+     */
     SelectorProcessor getSelectorForBindNewAddress();
     
+    /**
+     * Unbind an address and remove it from its {@link SelectorProcessor} 
+     * @param address
+     * @throws IOException
+     */
     void unbind(SocketAddress address) throws IOException;
 }

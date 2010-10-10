@@ -7,7 +7,6 @@ import junit.framework.Assert;
 import org.apache.mina.CloseFuture;
 import org.apache.mina.IoService;
 import org.apache.mina.IoSessionConfig;
-import org.apache.mina.service.IoHandler;
 import org.junit.Test;
 
 public class AbstractIoSessionTest {
@@ -71,12 +70,6 @@ public class AbstractIoSessionTest {
 
         @Override
         public void suspendWrite() {
-        }
-
-        @Override
-        public IoHandler getHandler() {
-            // TODO Auto-generated method stub
-            return null;
         }
     }
 

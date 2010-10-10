@@ -31,23 +31,23 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation of {@link IoSession} shared with all the different
- * transports. 
+ * transports.
  * 
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
 public abstract class AbstractIoSession implements IoSession {
     /** The logger for this class */
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractIoSession.class); 
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractIoSession.class);
 
     /** The session's unique identifier */
     private final long id;
-    
+
     /** The session's creation time */
     private final long creationTime;
-    
+
     /** The service this session is associated with */
     private final IoService service;
-    
+
     /** The number of bytes read since this session has been created */
     private volatile long readBytes;
 
@@ -59,27 +59,28 @@ public abstract class AbstractIoSession implements IoSession {
 
     /** Last time something was written for this session */
     private volatile long lastWriteTime;
-    
+
     /** attributes map */
     private final Map<Object, Object> attributes = new ConcurrentHashMap<Object, Object>(4);
-    
-    /** unique identifier generator*/
+
+    /** unique identifier generator */
     private static final AtomicLong NEXT_ID = new AtomicLong(0);
-    
+
     /**
-     * Create an {@link IoSession} with a unique identifier ({@link IoSession#getId()}) 
-     * and an associated {@link IoService}
+     * Create an {@link IoSession} with a unique identifier (
+     * {@link IoSession#getId()}) and an associated {@link IoService}
      * 
-     * @param the service this session is associated with
+     * @param the
+     *            service this session is associated with
      */
     public AbstractIoSession(IoService service) {
         // generated a unique id
         id = NEXT_ID.getAndIncrement();
         creationTime = System.currentTimeMillis();
         this.service = service;
-        LOG.debug("Created new session with id : {}",id);
+        LOG.debug("Created new session with id : {}", id);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -87,7 +88,7 @@ public abstract class AbstractIoSession implements IoSession {
     public long getId() {
         return id;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -95,7 +96,7 @@ public abstract class AbstractIoSession implements IoSession {
     public long getCreationTime() {
         return creationTime;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -103,7 +104,7 @@ public abstract class AbstractIoSession implements IoSession {
     public long getReadBytes() {
         return readBytes;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -111,7 +112,7 @@ public abstract class AbstractIoSession implements IoSession {
     public long getWrittenBytes() {
         return writtenBytes;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -119,7 +120,7 @@ public abstract class AbstractIoSession implements IoSession {
     public long getLastReadTime() {
         return lastReadTime;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -127,7 +128,7 @@ public abstract class AbstractIoSession implements IoSession {
     public long getLastWriteTime() {
         return lastWriteTime;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -135,7 +136,7 @@ public abstract class AbstractIoSession implements IoSession {
     public final long getLastIoTime() {
         return Math.max(lastReadTime, lastWriteTime);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -143,7 +144,7 @@ public abstract class AbstractIoSession implements IoSession {
     public IoService getService() {
         return service;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -151,7 +152,7 @@ public abstract class AbstractIoSession implements IoSession {
     public Object getAttribute(Object name) {
         return attributes.get(name);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -159,7 +160,7 @@ public abstract class AbstractIoSession implements IoSession {
     public Object setAttribute(Object name, Object value) {
         return attributes.put(name, value);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -167,7 +168,7 @@ public abstract class AbstractIoSession implements IoSession {
     public boolean containsAttribute(Object name) {
         return attributes.containsKey(name);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -175,7 +176,7 @@ public abstract class AbstractIoSession implements IoSession {
     public Object removeAttribute(Object name) {
         return attributes.remove(name);
     }
-    
+
     /**
      * {@inheritDoc}
      */

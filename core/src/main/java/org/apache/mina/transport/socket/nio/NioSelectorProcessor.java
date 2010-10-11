@@ -44,6 +44,11 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class NioSelectorProcessor implements SelectorProcessor {
+    /**
+     * A timeout used for the select, as we need to get out to deal with idle
+     * sessions
+     */
+    private static final long SELECT_TIMEOUT = 1000L;
 
     private SelectorStrategy strategy;
 
@@ -125,7 +130,6 @@ public class NioSelectorProcessor implements SelectorProcessor {
     }
 
     private class SelectorWorker extends Thread {
-
         // map for finding the keys associated with a given server
         private Map<ServerSocketChannel, SelectionKey> serverKey = new HashMap<ServerSocketChannel, SelectionKey>();
 
@@ -133,6 +137,7 @@ public class NioSelectorProcessor implements SelectorProcessor {
         public void run() {
             if (selector == null) {
                 log.debug("opening a new selector");
+                
                 try {
                     selector = Selector.open();
                 } catch (IOException e) {
@@ -164,11 +169,12 @@ public class NioSelectorProcessor implements SelectorProcessor {
                             key.attach(channel);
                         }
                     }
+                    
                     log.debug("selecting...");
-                    int result = selector.select();
-                    log.debug("... done selecting : " + result);
+                    int readyCount = selector.select(SELECT_TIMEOUT);
+                    log.debug("... done selecting : " + readyCount);
 
-                    if (result > 0) {
+                    if (readyCount > 0) {
                         // process selected keys
                         for (SelectionKey key : selector.selectedKeys()) {
                             if (key.isAcceptable()) {

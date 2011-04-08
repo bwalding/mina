@@ -17,15 +17,16 @@
  *  under the License.
  *
  */
-package org.apache.mina.service;
+package org.apache.mina.service.server;
 
-import org.apache.mina.IoAcceptor;
+import org.apache.mina.IoServer;
+import org.apache.mina.service.AbstractIoService;
 
 /**
- * Base implementation for {@link IoAcceptor}s.
+ * Base implementation for {@link IoServer}s.
  *
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
-public abstract class AbstractIoAcceptor extends AbstractIoService implements IoAcceptor {
+public abstract class AbstractIoServer extends AbstractIoService implements IoServer {
 
 }

@@ -17,7 +17,7 @@
  *  under the License.
  *
  */
-package org.apache.mina.transport.socket.nio;
+package org.apache.mina.transport.tcp;
 
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
@@ -25,6 +25,7 @@ import java.nio.channels.SocketChannel;
 import org.apache.mina.CloseFuture;
 import org.apache.mina.IoSessionConfig;
 import org.apache.mina.session.AbstractIoSession;
+import org.apache.mina.transport.tcp.nio.NioTcpServer;
 
 /**
  * 
@@ -34,7 +35,7 @@ import org.apache.mina.session.AbstractIoSession;
  */
 public class NioSocketSession extends AbstractIoSession {
     
-    NioSocketSession(NioSocketAcceptor service,SocketChannel channel) {
+    NioSocketSession(NioTcpServer service,SocketChannel channel) {
         super(service);
         
     }

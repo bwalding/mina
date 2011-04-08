@@ -28,7 +28,7 @@ import java.net.SocketAddress;
  * 
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
-public interface IoConnector extends IoService {
+public interface IoClient extends IoService {
     /**
      * Returns the connect timeout in milliseconds. The default value is 1
      * minute.

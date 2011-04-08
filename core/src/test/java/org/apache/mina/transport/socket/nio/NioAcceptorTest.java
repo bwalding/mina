@@ -28,6 +28,8 @@ import junit.framework.Assert;
 
 import org.apache.mina.service.OneThreadSelectorStrategy;
 import org.apache.mina.service.SelectorFactory;
+import org.apache.mina.transport.tcp.NioSelectorProcessor;
+import org.apache.mina.transport.tcp.nio.NioTcpServer;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,7 @@ public class NioAcceptorTest {
 
         OneThreadSelectorStrategy strategy = new OneThreadSelectorStrategy(
                 new SelectorFactory(NioSelectorProcessor.class));
-        NioSocketAcceptor acceptor = new NioSocketAcceptor(strategy);
+        NioTcpServer acceptor = new NioTcpServer(strategy);
         SocketAddress address = new InetSocketAddress(9999);
 
         try {

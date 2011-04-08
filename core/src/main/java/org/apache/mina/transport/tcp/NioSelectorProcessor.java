@@ -18,7 +18,7 @@
  *
  */
 
-package org.apache.mina.transport.socket.nio;
+package org.apache.mina.transport.tcp;
 
 import java.io.IOException;
 import java.net.SocketAddress;

@@ -17,36 +17,15 @@
  *  under the License.
  *
  */
-package org.apache.mina;
+package org.apache.mina.transport.tcp.nio;
 
-import java.util.Map;
+import org.apache.mina.transport.tcp.AbstractTcpClient;
 
 /**
- * Base interface for all {@link IoServer}s and {@link IoClient}s
- * that provide I/O service and manage {@link IoSession}s.
- *
+ * TODO
+ * 
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
-public interface IoService {
-    
-    /**
-     * Returns the map of all sessions which are currently managed by this
-     * service.  The key of map is the {@link IoSession#getId() ID} of the
-     * session.
-     *
-     * @return the sessions. An empty collection if there's no session.
-     */
-    Map<Long, IoSession> getManagedSessions();
-    
-    /**
-     * Adds an {@link IoServiceListener} that listens any events related with
-     * this service.
-     */
-    void addListener(IoServiceListener listener);
+public class NioTcpClient extends AbstractTcpClient {
 
-    /**
-     * Removed an existing {@link IoServiceListener} that listens any events
-     * related with this service.
-     */
-    void removeListener(IoServiceListener listener);
 }

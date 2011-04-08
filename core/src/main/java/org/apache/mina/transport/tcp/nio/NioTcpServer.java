@@ -17,7 +17,7 @@
  *  under the License.
  *
  */
-package org.apache.mina.transport.socket.nio;
+package org.apache.mina.transport.tcp.nio;
 
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -25,8 +25,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.mina.service.AbstractIoAcceptor;
 import org.apache.mina.service.SelectorStrategy;
+import org.apache.mina.transport.tcp.AbstractTcpServer;
+import org.apache.mina.transport.tcp.NioSelectorProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +36,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  */
-public class NioSocketAcceptor extends AbstractIoAcceptor {
+public class NioTcpServer extends AbstractTcpServer {
 
-    static final Logger LOG = LoggerFactory.getLogger(NioSocketAcceptor.class);
+    static final Logger LOG = LoggerFactory.getLogger(NioTcpServer.class);
 
     // list of bound addresses
     private Set<SocketAddress> addresses = Collections
@@ -50,7 +51,7 @@ public class NioSocketAcceptor extends AbstractIoAcceptor {
     // the strategy for dispatching servers and client to selector threads.
     private SelectorStrategy strategy;
 
-    public NioSocketAcceptor(SelectorStrategy strategy) {
+    public NioTcpServer(SelectorStrategy strategy) {
         this.strategy = strategy;
     }
 

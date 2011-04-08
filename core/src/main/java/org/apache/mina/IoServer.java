@@ -28,7 +28,7 @@ import java.util.Set;
  * @author <a href="http://mina.apache.org">Apache MINA Project</a>
  * 
  */
-public interface IoAcceptor extends IoService {
+public interface IoServer extends IoService {
 
     /**
      * Returns a {@link Set} of the local addresses which are bound currently.

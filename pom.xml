@@ -110,7 +110,7 @@
     <version.junit>4.7</version.junit>
     <version.jzlib>1.0.7</version.jzlib>
     <version.log4j>1.2.14</version.log4j>
-    <version.ognl>2.7.3</version.ognl>
+    <version.ognl>3.2.10</version.ognl>
     <version.pmd>4.2.5</version.pmd>
     <version.rmock>2.0.2</version.rmock>
     <version.slf4j.api>1.5.11</version.slf4j.api>

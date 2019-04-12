@@ -90,7 +90,7 @@
     <version.jar.plugin>2.3</version.jar.plugin>
     <version.javadoc.plugin>2.6.1</version.javadoc.plugin>
     <version.jxr.plugin>2.1</version.jxr.plugin>
-    <version.model.plugin>2.2.1</version.model.plugin>
+    <version.model.plugin>3.6.1</version.model.plugin>
     <version.project.plugin>2.2.1</version.project.plugin>
     <version.rat.maven.plugin>1.0-alpha-3</version.rat.maven.plugin>
     <version.release.plugin>2.0</version.release.plugin>

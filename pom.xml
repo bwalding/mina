@@ -115,7 +115,7 @@
     <version.rmock>2.0.2</version.rmock>
     <version.slf4j.api>1.5.11</version.slf4j.api>
     <version.slf4j.log4j12>1.5.11</version.slf4j.log4j12>
-    <version.slf4j.jcl.over.slf4j>1.5.11</version.slf4j.jcl.over.slf4j>
+    <version.slf4j.jcl.over.slf4j>1.7.28</version.slf4j.jcl.over.slf4j>
     <version.springframework>2.5.6</version.springframework>
     <version.tomcat.apr>5.5.23</version.tomcat.apr>
     <version.xbean.spring>3.6</version.xbean.spring>

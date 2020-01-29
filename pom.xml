@@ -102,7 +102,7 @@
 
     <!-- Jars -->
     <version.commons.lang>2.5</version.commons.lang>
-    <version.easymock>2.5.2</version.easymock>
+    <version.easymock>4.2</version.easymock>
     <version.easymockclassextension>2.5.2</version.easymockclassextension>
     <version.jboss.javassist>3.7.ga</version.jboss.javassist>
     <version.jdom>1.0</version.jdom>
